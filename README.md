@@ -5,7 +5,7 @@ The code in this repository was tested with Python 3.13.2. To run the project, y
 ```bash
 pip install -r requirements.txt
 ```
-- **Using conda (for full environment reproducibility)**
+- **Using conda** (for full environment reproducibility):
   ```bash
   conda env create -f environment.yml
   conda activate <env_name>
