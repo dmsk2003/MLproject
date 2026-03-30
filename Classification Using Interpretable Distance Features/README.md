@@ -11,7 +11,7 @@ The output consists of three CSV files:
 
 Each row represents a gene pair with its corresponding OG labels and binary classification label.
 
-**Note:** If the pairwise dataset files (`train_pairs.csv`, `val_pairs.csv`, `test_pairs.csv`) are already available, you can skip running this script.
+> **Note:** If the pairwise dataset files (`train_pairs.csv`, `val_pairs.csv`, `test_pairs.csv`) are already available, you can skip running this script.
 
 **'extract_features.py'**
 
