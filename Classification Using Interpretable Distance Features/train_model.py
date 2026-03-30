@@ -1,52 +1,33 @@
-import pandas as pd # type: ignore
-import numpy as np # type: ignore
-import matplotlib.pyplot as plt # type: ignore
-import seaborn as sns # type: ignore
-from sklearn.linear_model import LogisticRegression # type: ignore
-from sklearn.preprocessing import StandardScaler # type: ignore
-from sklearn.ensemble import RandomForestClassifier # type: ignore
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, roc_auc_score # type: ignore
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, roc_auc_score
 
 TRAIN_FILE = "train_pairs_features.csv"
 VAL_FILE   = "val_pairs_features.csv"
 TEST_FILE  = "test_pairs_features.csv"
 
-#FEATURES = ["lev_dist", "hellinger_dist", "ncd_dist"]
-FEATURE_SETS = {
-    "Levenshtein only": ["lev_dist"],
-    "Hellinger only": ["hellinger_dist"],
-    "NCD only": ["ncd_dist"],
-    "All features": ["lev_dist", "hellinger_dist", "ncd_dist"]
-}
+FEATURES = ["lev_dist", "hellinger_dist", "ncd_dist"]
 TARGET = "label"
 
-def load_data(filepath, feature_list):
+def load_data(filepath):
+    """Loads CSV and returns X (features) and y (labels)."""
     print(f"Loading {filepath}...")
     df = pd.read_csv(filepath)
     
+    # Drop rows with NaN
     initial_len = len(df)
     df = df.dropna()
     if len(df) < initial_len:
         print(f"  Dropped {initial_len - len(df)} rows with missing values.")
-    
-    X = df[feature_list]
+        
+    X = df[FEATURES]
     y = df[TARGET]
     return X, y
-
-#def load_data(filepath):
-#    """Loads CSV and returns X (features) and y (labels)."""
-#    print(f"Loading {filepath}...")
-#    df = pd.read_csv(filepath)
-#    
-#    # Drop rows with NaN
-#    initial_len = len(df)
-#    df = df.dropna()
-#    if len(df) < initial_len:
-#        print(f"  Dropped {initial_len - len(df)} rows with missing values.")
-#        
-#    X = df[FEATURES]
-#    y = df[TARGET]
-#    return X, y
 
 def plot_confusion_matrix(y_true, y_pred, title="Confusion Matrix"):
     cm = confusion_matrix(y_true, y_pred)
@@ -65,55 +46,6 @@ def plot_confusion_matrix(y_true, y_pred, title="Confusion Matrix"):
 
 
 # --- MAIN EXECUTION ---
-if __name__ == "__main__":
-
-    for name, feats in FEATURE_SETS.items():
-
-        print("\n==============================")
-        print(f"Running experiment: {name}")
-        print("==============================")
-
-        X_train, y_train = load_data(TRAIN_FILE, feats)
-        X_val, y_val     = load_data(VAL_FILE, feats)
-        X_test, y_test   = load_data(TEST_FILE, feats)
-
-        # -------- Random Forest --------
-        rf_model = RandomForestClassifier(
-            n_estimators=150,
-            random_state=42,
-            max_depth=15
-        )
-
-        rf_model.fit(X_train, y_train)
-
-        y_pred = rf_model.predict(X_test)
-        acc = accuracy_score(y_test, y_pred)
-
-        y_prob = rf_model.predict_proba(X_test)[:,1]
-        auc = roc_auc_score(y_test, y_prob)
-
-        print(f"RF Test Accuracy: {acc:.4f}")
-        print(f"RF ROC-AUC: {auc:.4f}")
-
-        # -------- Logistic Regression --------
-        scaler = StandardScaler()
-        X_train_scaled = scaler.fit_transform(X_train)
-        X_test_scaled  = scaler.transform(X_test)
-
-        log_model = LogisticRegression(solver='liblinear', random_state=42)
-        log_model.fit(X_train_scaled, y_train)
-
-        y_pred = log_model.predict(X_test_scaled)
-        acc = accuracy_score(y_test, y_pred)
-
-        y_prob = log_model.predict_proba(X_test_scaled)[:,1]
-        auc = roc_auc_score(y_test, y_prob)
-
-        print(f"LR Test Accuracy: {acc:.4f}")
-        print(f"LR ROC-AUC: {auc:.4f}")
-
-
-'''
 if __name__ == "__main__":
     X_train, y_train = load_data(TRAIN_FILE)
     X_val, y_val     = load_data(VAL_FILE) 
@@ -179,4 +111,3 @@ if __name__ == "__main__":
     rf_auc = roc_auc_score(y_test, test_prob)
     print(f"ROC-AUC:  {rf_auc:.4f}")
     plot_confusion_matrix(y_test, test_predictions, "Logistic Regression Confusion Matrix")
-    '''
