@@ -40,3 +40,8 @@ Due to size limitations, the dataset is hosted externally.
 You can download it by clicking on the **"data"** link in this repository, which will take you to a Google Drive folder.
 
 After downloading, make sure to place the files in the correct directory so that the code can access them properly.
+
+## Models
+
+Pretrained models are provided externally.
+You can download them by clicking on the **"models"** link in this repository, which will redirect you to a Google Drive folder.
